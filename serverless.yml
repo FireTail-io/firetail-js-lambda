@@ -1,0 +1,17 @@
+service: js-serverless-test-1
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+
+plugins:
+  - serverless-offline
+
+functions:
+  pets:
+    handler: app.pets
+    events:
+      - http:
+          path: /
+          method: get
