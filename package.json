@@ -1,22 +1,21 @@
 {
-  "name": "firetail-lambda",
+  "name": "firetail-js-lambda",
   "version": "1.0.0",
   "description": "Simple code example for the logging of lambda requests",
-  "main": "index.js",
   "scripts": {
     "start": "serverless offline",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/FireTail-io/firetail-lambda.git"
+    "url": "git+https://github.com/FireTail-io/firetail-js-lambda.git"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Brian Shannon",
+  "license": "LGPL",
   "bugs": {
-    "url": "https://github.com/FireTail-io/firetail-lambda/issues"
+    "url": "https://github.com/FireTail-io/firetail-js-lambda/issues"
   },
-  "homepage": "https://github.com/FireTail-io/firetail-lambda#readme",
+  "homepage": "https://github.com/FireTail-io/firetail-js-lambda#readme",
   "dependencies": {
     "@types/aws-lambda": "^8.10.109",
     "serverless-offline": "^12.0.4",

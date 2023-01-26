@@ -1,4 +1,4 @@
-service: js-serverless-test-1
+service: firetail
 frameworkVersion: '3'
 
 provider:
@@ -6,6 +6,7 @@ provider:
   runtime: nodejs14.x
 
 plugins:
+  - serverless-plugin-typescript
   - serverless-offline
 
 functions:

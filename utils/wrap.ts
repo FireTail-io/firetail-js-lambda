@@ -4,7 +4,7 @@ import {
   APIGatewayProxyResult,
   Context } from 'aws-lambda';
 
-import log from './log'
+import * as log from './log'
 
 function wrap(next:Function){
 
