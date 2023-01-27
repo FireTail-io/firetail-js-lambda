@@ -1,9 +1,10 @@
 {
-  "name": "firetail-js-lambda",
+  "name": "@public.firetail.io/firetail-js-lambda",
   "version": "1.0.0",
+  "main":"dist/index.js",
   "description": "Simple code example for the logging of lambda requests",
   "scripts": {
-    "start": "serverless offline",
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -16,10 +17,8 @@
     "url": "https://github.com/FireTail-io/firetail-js-lambda/issues"
   },
   "homepage": "https://github.com/FireTail-io/firetail-js-lambda#readme",
-  "dependencies": {
+  "devDependencies": {
     "@types/aws-lambda": "^8.10.109",
-    "serverless-offline": "^12.0.4",
-    "serverless-plugin-typescript": "^2.1.4",
     "typescript": "^4.9.4"
   }
 }
