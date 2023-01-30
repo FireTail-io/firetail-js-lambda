@@ -5,7 +5,11 @@
   "description": "Simple code example for the logging of lambda requests",
   "scripts": {
     "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --no-cache ",
+    "test:go": "npm test -- --watch --coverage",
+    "test:update": "npm test -- --updateSnapshot",
+    "test:cover": "npm test -- --coverage --no-cache --detectOpenHandles",
+    "test:watch": "npm test -- --watch --runInBand"
   },
   "repository": {
     "type": "git",
@@ -18,6 +22,7 @@
   },
   "homepage": "https://github.com/FireTail-io/firetail-js-lambda#readme",
   "devDependencies": {
+    "jest": "^29.4.1",
     "@types/aws-lambda": "^8.10.109",
     "typescript": "^4.9.4"
   }
