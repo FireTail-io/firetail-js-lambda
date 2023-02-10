@@ -17,7 +17,7 @@ import {
     const date2_ms = executionContent.finishedAt.getTime();
 
     // Calculate the difference in milliseconds
-    const executionTime = date2_ms - date1_ms;
+    const execution_time = date2_ms - date1_ms;
 
     const logExt = {
       event,
@@ -25,7 +25,7 @@ import {
           statusCode:executionContent.statusCode,
           body:executionContent.resBody
       },
-      executionTime
+      execution_time
     }
     //console.log("firetail:log-ext:",logExt)
     console.log("firetail:log-ext:"+Buffer.from(JSON.stringify(logExt)).toString('base64'))
