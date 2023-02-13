@@ -29,7 +29,14 @@ describe('test Firetail:Serverless', () => {
 
       console.log = (txt)=>{
         expect(txt.startsWith("firetail:log-ext:")).toBe(true);
+        const payload = JSON.parse(Buffer.from(txt.slice(17), "base64").toString("ascii"));
+        expect(payload).toHaveProperty('execution_time');
+        expect(payload).toHaveProperty('event');
+        expect(payload).toHaveProperty('response');
+        expect(payload.response).toHaveProperty('statusCode');
+        expect(payload.response).toHaveProperty('body');
       }
+      
       next(Serverless_Events["lambda function url"])
       .then((a)=>{
         const  {statusCode,body} = a
