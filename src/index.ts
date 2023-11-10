@@ -17,8 +17,8 @@ function log(
     event: APIGatewayProxyEvent | APIGatewayProxyEventV2,
     executionContent: ExecutionContent,
 ) {
-    const date1_ms = executionContent?.startedAt?.getTime?.();
-    const date2_ms = executionContent?.finishedAt?.getTime?.();
+    const date1_ms = executionContent.startedAt.getTime();
+    const date2_ms = executionContent.finishedAt.getTime();
 
     const executionTime = Number.isFinite(date2_ms - date1_ms)
         ? date2_ms - date1_ms
@@ -27,11 +27,11 @@ function log(
     const logExt = {
         event,
         response: {
-            statusCode: executionContent?.statusCode,
-            body: executionContent?.resBody,
+            statusCode: executionContent.statusCode,
+            body: executionContent.resBody,
         },
         executionTime,
-        observations: executionContent?.observations,
+        observations: executionContent.observations,
     };
 
     console.log(
