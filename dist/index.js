@@ -12,6 +12,12 @@ function log(event, executionContent) {
             body: executionContent.resBody,
         },
         executionTime: executionTime,
+        observations: executionContent.observations,
+        metadata: {
+            libraryType: "Lambda wrapper",
+            libraryVersion: "1.0.1",
+            libraryLanguage: "JavaScript",
+        },
     };
     console.log("firetail:log-ext:" +
         Buffer.from(JSON.stringify(logExt)).toString("base64"));
@@ -27,9 +33,17 @@ function wrap(next) {
         }
         else if (typeof next === "function") {
             workInProgress = Promise.resolve(next(event, context, function () { }));
+            observations.push({
+                type: "firetail.configuration.synchronous.handler.detected",
+                title: "The wrapper has been called with a synchronous function",
+            });
         }
         else {
             workInProgress = Promise.resolve(next);
+            observations.push({
+                type: "firetail.configuration.no.handler.detected",
+                title: "The wrapper has been called with an invalid argument",
+            });
         }
         return workInProgress.then(function (result) {
             var body = result.body, statusCode = result.statusCode;
@@ -39,6 +53,7 @@ function wrap(next) {
                 resBody: body,
                 startedAt: startedAt,
                 finishedAt: finishedAt,
+                observations: observations,
             });
             return result;
         });

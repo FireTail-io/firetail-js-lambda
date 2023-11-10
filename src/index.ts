@@ -11,6 +11,7 @@ type ExecutionContent = {
     resBody: Object | String;
     startedAt: Date;
     finishedAt: Date;
+    observations: Array<Object>;
 };
 
 function log(
@@ -31,6 +32,12 @@ function log(
             body: executionContent.resBody,
         },
         executionTime,
+        observations: executionContent.observations,
+        metadata: {
+            libraryType: "Lambda wrapper",
+            libraryVersion: "1.0.1",
+            libraryLanguage: "JavaScript",
+        },
     };
 
     console.log(
@@ -55,8 +62,16 @@ function wrap(next: Function & { then?: Function }) {
             workInProgress = next(event, context, () => {});
         } else if (typeof next === "function") {
             workInProgress = Promise.resolve(next(event, context, () => {}));
+            observations.push({
+                type: "firetail.configuration.synchronous.handler.detected",
+                title: "The wrapper has been called with a synchronous function",
+            });
         } else {
             workInProgress = Promise.resolve(next);
+            observations.push({
+                type: "firetail.configuration.no.handler.detected",
+                title: "The wrapper has been called with an invalid argument",
+            });
         }
 
         return workInProgress.then((result: APIGatewayProxyResult) => {
@@ -68,6 +83,7 @@ function wrap(next: Function & { then?: Function }) {
                 resBody: body,
                 startedAt,
                 finishedAt,
+                observations,
             });
             return result;
         });
