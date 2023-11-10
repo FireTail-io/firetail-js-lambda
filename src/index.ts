@@ -11,6 +11,7 @@ type ExecutionContent = {
     resBody: Object | String;
     startedAt: Date;
     finishedAt: Date;
+    observations: Array<Object>;
 };
 
 function log(
@@ -45,13 +46,13 @@ function log(
     );
 }
 
-function wrap(next: Function) {
+function wrap(next: Function & { then?: Function }) {
     return (
         event: APIGatewayProxyEvent | APIGatewayProxyEventV2,
         context: Context,
     ) => {
         const startedAt = new Date();
-        const observations = [];
+        const observations: Array<Object> = [];
 
         let workInProgress;
         if (typeof next === "function" && typeof next.then === "function") {
