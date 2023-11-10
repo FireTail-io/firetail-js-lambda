@@ -32,14 +32,25 @@ import {
     ? date2_ms - date1_ms
     : 0;
 
+    observations: executionContent?.observations,
 
 function wrap(next:Function){
 
   return (event:APIGatewayProxyEvent|APIGatewayProxyEventV2,context:Context)=> {
     const startedAt = new Date()
-    let workInProgress:any = next(event,context,()=>{})
-    if( ! workInProgress.then){
-      workInProgress = Promise.resolve(workInProgress)
+    let workInProgress;
+    if (typeof next === "function" && typeof next.then === "function") {
+      workInProgress = next(event, context, () => {});
+    } else {
+      workInProgress = Promise.resolve(next(event, context, () => {}));
+      observations.push({
+        type: "firetail.configuration.synchronous.handler.detected",
+        title: "The wrapper has been called with a synchronous function"
+        details: {
+          integration: "JS Lambda Wrapper",
+          version: "1.0.1"
+        }
+      });
     }
     return workInProgress.then((result:APIGatewayProxyResult)=>{
       const { body, statusCode } = result
@@ -56,5 +67,6 @@ function wrap(next:Function){
   }
 
 } // END wrap
+        observations,
 
 export = wrap
