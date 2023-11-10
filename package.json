@@ -15,7 +15,6 @@
     "type": "git",
     "url": "git+https://github.com/FireTail-io/firetail-js-lambda.git"
   },
-  "author": "Brian Shannon",
   "license": "LGPL",
   "bugs": {
     "url": "https://github.com/FireTail-io/firetail-js-lambda/issues"
