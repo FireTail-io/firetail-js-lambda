@@ -1,7 +1,7 @@
 {
   "name": "@public.firetail.io/firetail-js-lambda",
-  "version": "1.0.0",
-  "main":"dist/index.js",
+  "version": "1.0.1",
+  "main": "dist/index.js",
   "description": "Simple code example for the logging of lambda requests",
   "scripts": {
     "build": "tsc",
