@@ -48,10 +48,15 @@ function wrap(next: Function & { then?: Function }) {
         const observations: Array<Object> = [];
 
         let workInProgress;
-        if (typeof next === "function" && typeof next.then === "function") {
+        if (
+            next.constructor.name === "Promise" ||
+            next.constructor.name === "AsyncFunction"
+        ) {
             workInProgress = next(event, context, () => {});
-        } else {
+        } else if (typeof next === "function") {
             workInProgress = Promise.resolve(next(event, context, () => {}));
+        } else {
+            workInProgress = Promise.resolve(next);
         }
 
         return workInProgress.then((result: APIGatewayProxyResult) => {
