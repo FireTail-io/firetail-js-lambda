@@ -32,6 +32,11 @@ function log(
         },
         executionTime,
         observations: executionContent.observations,
+        metadata: {
+            libraryType: "Lambda wrapper",
+            libraryVersion: "1.0.1",
+            libraryLanguage: "JavaScript",
+        },
     };
 
     console.log(
@@ -56,10 +61,6 @@ function wrap(next: Function) {
             observations.push({
                 type: "firetail.configuration.synchronous.handler.detected",
                 title: "The wrapper has been called with a synchronous function",
-                details: {
-                    integration: "JS Lambda Wrapper",
-                    version: "1.0.1",
-                },
             });
         }
 
