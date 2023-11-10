@@ -55,11 +55,11 @@ function wrap(next: Function) {
             workInProgress = Promise.resolve(next(event, context, () => {}));
             observations.push({
                 type: "firetail.configuration.synchronous.handler.detected",
-                title: "The wrapper has been called with a synchronous function"
+                title: "The wrapper has been called with a synchronous function",
                 details: {
                     integration: "JS Lambda Wrapper",
-                    version: "1.0.1"
-                }
+                    version: "1.0.1",
+                },
             });
         }
 
