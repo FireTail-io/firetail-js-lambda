@@ -2,25 +2,40 @@
 function log(event, executionContent) {
     var date1_ms = executionContent.startedAt.getTime();
     var date2_ms = executionContent.finishedAt.getTime();
-    // Calculate the difference in milliseconds
-    var executionTime = date2_ms - date1_ms;
+    var executionTime = Number.isFinite(date2_ms - date1_ms)
+        ? date2_ms - date1_ms
+        : 0;
     var logExt = {
         event: event,
         response: {
             statusCode: executionContent.statusCode,
-            body: executionContent.resBody
+            body: executionContent.resBody,
         },
-        executionTime: executionTime
+        executionTime: executionTime,
+        observations: executionContent.observations,
+        metadata: {
+            libraryType: "Lambda wrapper",
+            libraryVersion: "1.0.1",
+            libraryLanguage: "JavaScript",
+        },
     };
-    //console.log("firetail:log-ext:",logExt)
-    console.log("firetail:log-ext:" + Buffer.from(JSON.stringify(logExt)).toString('base64'));
-} // END log
+    console.log("firetail:log-ext:" +
+        Buffer.from(JSON.stringify(logExt)).toString("base64"));
+}
 function wrap(next) {
     return function (event, context) {
         var startedAt = new Date();
-        var workInProgress = next(event, context, function () { });
-        if (!workInProgress.then) {
-            workInProgress = Promise.resolve(workInProgress);
+        var observations = [];
+        var workInProgress;
+        if (typeof next === "function" && typeof next.then === "function") {
+            workInProgress = next(event, context, function () { });
+        }
+        else {
+            workInProgress = Promise.resolve(next(event, context, function () { }));
+            observations.push({
+                type: "firetail.configuration.synchronous.handler.detected",
+                title: "The wrapper has been called with a synchronous function",
+            });
         }
         return workInProgress.then(function (result) {
             var body = result.body, statusCode = result.statusCode;
@@ -29,11 +44,12 @@ function wrap(next) {
                 statusCode: statusCode || 200,
                 resBody: body,
                 startedAt: startedAt,
-                finishedAt: finishedAt
+                finishedAt: finishedAt,
+                observations: observations,
             });
             return result;
         });
     };
-} // END wrap
+}
 module.exports = wrap;
 //# sourceMappingURL=index.js.map
