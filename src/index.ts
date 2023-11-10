@@ -13,11 +13,6 @@ import {
   }
 
   function log(event:APIGatewayProxyEvent|APIGatewayProxyEventV2, executionContent:ExecutionContent){
-    const date1_ms = executionContent.startedAt.getTime();
-    const date2_ms = executionContent.finishedAt.getTime();
-
-    // Calculate the difference in milliseconds
-    const executionTime = date2_ms - date1_ms;
 
     const logExt = {
       event,
@@ -29,8 +24,13 @@ import {
     }
     //console.log("firetail:log-ext:",logExt)
     console.log("firetail:log-ext:"+Buffer.from(JSON.stringify(logExt)).toString('base64'))
+  const date1_ms = executionContent?.startedAt?.getTime?.();
+  const date2_ms = executionContent?.finishedAt?.getTime?.();
 
   } // END log
+  const executionTime = Number.isFinite(date2_ms - date1_ms)
+    ? date2_ms - date1_ms
+    : 0;
 
 
 function wrap(next:Function){
