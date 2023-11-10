@@ -3,41 +3,51 @@ import {
   APIGatewayProxyEvent,
   APIGatewayProxyEventV2,
   APIGatewayProxyResult,
-  Context } from 'aws-lambda';
+  Context,
+} from "aws-lambda";
 
-  type ExecutionContent = {
-    statusCode:Number|String,
-    resBody:Object|String,
-    startedAt:Date,
-    finishedAt:Date
-  }
+type ExecutionContent = {
+  statusCode: Number | String;
+  resBody: Object | String;
+  startedAt: Date;
+  finishedAt: Date;
+};
 
-  function log(event:APIGatewayProxyEvent|APIGatewayProxyEventV2, executionContent:ExecutionContent){
-
-    const logExt = {
-      event,
-      response: {
-          statusCode:executionContent.statusCode,
-          body:executionContent.resBody
-      },
-      executionTime
-    }
-    //console.log("firetail:log-ext:",logExt)
-    console.log("firetail:log-ext:"+Buffer.from(JSON.stringify(logExt)).toString('base64'))
+function log(
+  event: APIGatewayProxyEvent | APIGatewayProxyEventV2,
+  executionContent: ExecutionContent,
+) {
   const date1_ms = executionContent?.startedAt?.getTime?.();
   const date2_ms = executionContent?.finishedAt?.getTime?.();
 
-  } // END log
   const executionTime = Number.isFinite(date2_ms - date1_ms)
     ? date2_ms - date1_ms
     : 0;
 
+  const logExt = {
+    event,
+    response: {
+      statusCode: executionContent?.statusCode,
+      body: executionContent?.resBody,
+    },
+    executionTime,
     observations: executionContent?.observations,
+  };
 
-function wrap(next:Function){
+  console.log(
+    "firetail:log-ext:" +
+      Buffer.from(JSON.stringify(logExt)).toString("base64"),
+  );
+}
 
-  return (event:APIGatewayProxyEvent|APIGatewayProxyEventV2,context:Context)=> {
-    const startedAt = new Date()
+function wrap(next: Function) {
+  return (
+    event: APIGatewayProxyEvent | APIGatewayProxyEventV2,
+    context: Context,
+  ) => {
+    const startedAt = new Date();
+    const observations = [];
+
     let workInProgress;
     if (typeof next === "function" && typeof next.then === "function") {
       workInProgress = next(event, context, () => {});
@@ -52,21 +62,21 @@ function wrap(next:Function){
         }
       });
     }
-    return workInProgress.then((result:APIGatewayProxyResult)=>{
-      const { body, statusCode } = result
-      const finishedAt = new Date()
 
-      log(event,{
-        statusCode:statusCode||200,
-        resBody:body,
+    return workInProgress.then((result: APIGatewayProxyResult) => {
+      const { body, statusCode } = result;
+      const finishedAt = new Date();
+
+      log(event, {
+        statusCode: statusCode || 200,
+        resBody: body,
         startedAt,
-        finishedAt
-      })
-      return result
-    })
-  }
-
-} // END wrap
+        finishedAt,
         observations,
+      });
+      return result;
+    });
+  };
+}
 
-export = wrap
+export = wrap;
