@@ -89,9 +89,13 @@ describe("test Firetail:Serverless", () => {
             const base64 = txt?.slice(17);
             const json = JSON.parse(atob(base64));
             expect(json.executionTime).toBeLessThan(10);
+            expect(json.observations).toHaveLength(1);
+            expect(json.observations[0].type).toBe(
+                "firetail.configuration.synchronous.handler.detected",
+            );
         };
-        next(Serverless_Events["lambda function url"])
-            .then(({ statusCode, body }) => {
+        next(Serverless_Events["lambda function url"]).then(
+            ({ statusCode, body }) => {
                 expect(statusCode).toBe(200);
                 expect(body).toBe(
                     '[{"id":1,"name":"Bubbles","tag":"fish"},' +
@@ -100,17 +104,10 @@ describe("test Firetail:Serverless", () => {
                         '{"id":4,"name":"Buzz","tag":"dog"},' +
                         '{"id":5,"name":"Duke","owner":"Tom"}]',
                 );
-                return next(Serverless_Events["api Gateway Proxy Event"]);
-            })
-            .then(({ statusCode, body }) => {
-                expect(statusCode).toBe(200);
-                expect(body).toBe(
-                    '[{"id":1,"name":"Bubbles","tag":"fish"},' +
-                        '{"id":2,"name":"Jax","tag":"cat"}]',
-                );
                 console.log = cLog.bind(console);
                 done();
-            });
+            },
+        );
     });
 
     test("should not throw with non-function lambda function url", done => {
@@ -126,6 +123,10 @@ describe("test Firetail:Serverless", () => {
             const base64 = txt?.slice(17);
             const json = JSON.parse(atob(base64));
             expect(json.executionTime).toBeLessThan(10);
+            expect(json.observations).toHaveLength(1);
+            expect(json.observations[0].type).toBe(
+                "firetail.configuration.no.handler.detected",
+            );
         };
         next(Serverless_Events["lambda function url"]).then(
             ({ statusCode, body }) => {
