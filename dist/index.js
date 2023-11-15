@@ -2,7 +2,7 @@
 function log(event, executionContent) {
     var date1_ms = executionContent.startedAt.getTime();
     var date2_ms = executionContent.finishedAt.getTime();
-    var executionTime = Number.isFinite(date2_ms - date1_ms)
+    var execution_time = Number.isFinite(date2_ms - date1_ms)
         ? date2_ms - date1_ms
         : 0;
     var logExt = {
@@ -11,7 +11,7 @@ function log(event, executionContent) {
             statusCode: executionContent.statusCode,
             body: executionContent.resBody,
         },
-        executionTime: executionTime,
+        execution_time: execution_time,
     };
     console.log("firetail:log-ext:" +
         Buffer.from(JSON.stringify(logExt)).toString("base64"));
