@@ -11,7 +11,7 @@ function log(event, executionContent) {
             statusCode: executionContent.statusCode,
             body: executionContent.resBody,
         },
-        executionTime: executionTime,
+        execution_time: executionTime,
         observations: executionContent.observations,
         metadata: {
             libraryType: "Lambda wrapper",
@@ -19,26 +19,30 @@ function log(event, executionContent) {
             libraryLanguage: "JavaScript",
         },
     };
-    console.log("firetail:log-ext:" +
-        Buffer.from(JSON.stringify(logExt)).toString("base64"));
+    console.log(
+        "firetail:log-ext:" +
+            Buffer.from(JSON.stringify(logExt)).toString("base64"),
+    );
 }
 function wrap(next) {
     return function (event, context) {
         var startedAt = new Date();
         var observations = [];
         var workInProgress;
-        if (next.constructor.name === "Promise" ||
-            next.constructor.name === "AsyncFunction") {
-            workInProgress = next(event, context, function () { });
-        }
-        else if (typeof next === "function") {
-            workInProgress = Promise.resolve(next(event, context, function () { }));
+        if (
+            next.constructor.name === "Promise" ||
+            next.constructor.name === "AsyncFunction"
+        ) {
+            workInProgress = next(event, context, function () {});
+        } else if (typeof next === "function") {
+            workInProgress = Promise.resolve(
+                next(event, context, function () {}),
+            );
             observations.push({
                 type: "firetail.configuration.synchronous.handler.detected",
                 title: "The wrapper has been called with a synchronous function",
             });
-        }
-        else {
+        } else {
             workInProgress = Promise.resolve(next);
             observations.push({
                 type: "firetail.configuration.no.handler.detected",
@@ -46,7 +50,8 @@ function wrap(next) {
             });
         }
         return workInProgress.then(function (result) {
-            var body = result.body, statusCode = result.statusCode;
+            var body = result.body,
+                statusCode = result.statusCode;
             var finishedAt = new Date();
             log(event, {
                 statusCode: statusCode || 200,

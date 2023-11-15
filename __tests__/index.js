@@ -37,7 +37,7 @@ describe("test Firetail:Serverless", () => {
             expect(txt.startsWith("firetail:log-ext:")).toBe(true);
             const base64 = txt?.slice(17);
             const json = JSON.parse(atob(base64));
-            expect(json.executionTime).toBeGreaterThan(time - 10);
+            expect(json.execution_time).toBeGreaterThan(time - 10);
         };
         next(Serverless_Events["lambda function url"])
             .then(({ statusCode, body }) => {
@@ -88,7 +88,7 @@ describe("test Firetail:Serverless", () => {
             expect(txt.startsWith("firetail:log-ext:")).toBe(true);
             const base64 = txt?.slice(17);
             const json = JSON.parse(atob(base64));
-            expect(json.executionTime).toBeLessThan(10);
+            expect(json.execution_time).toBeLessThan(10);
             expect(json.observations).toHaveLength(1);
             expect(json.observations[0].type).toBe(
                 "firetail.configuration.synchronous.handler.detected",
@@ -122,7 +122,7 @@ describe("test Firetail:Serverless", () => {
             expect(txt.startsWith("firetail:log-ext:")).toBe(true);
             const base64 = txt?.slice(17);
             const json = JSON.parse(atob(base64));
-            expect(json.executionTime).toBeLessThan(10);
+            expect(json.execution_time).toBeLessThan(10);
             expect(json.observations).toHaveLength(1);
             expect(json.observations[0].type).toBe(
                 "firetail.configuration.no.handler.detected",
@@ -168,7 +168,7 @@ describe("test Firetail:Serverless", () => {
             expect(txt.startsWith("firetail:log-ext:")).toBe(true);
             const base64 = txt?.slice(17);
             const json = JSON.parse(atob(base64));
-            expect(json.executionTime).toBe(0);
+            expect(json.execution_time).toBe(0);
             expect(json.response.statusCode).toBe(200);
         };
         next(Serverless_Events["lambda function url"]).then(

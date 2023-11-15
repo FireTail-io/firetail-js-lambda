@@ -21,7 +21,7 @@ function log(
     const date1_ms = executionContent.startedAt.getTime();
     const date2_ms = executionContent.finishedAt.getTime();
 
-    const executionTime = Number.isFinite(date2_ms - date1_ms)
+    const execution_time = Number.isFinite(date2_ms - date1_ms)
         ? date2_ms - date1_ms
         : 0;
 
@@ -31,7 +31,7 @@ function log(
             statusCode: executionContent.statusCode,
             body: executionContent.resBody,
         },
-        executionTime,
+        execution_time,
         observations: executionContent.observations,
         metadata: {
             libraryType: "Lambda wrapper",
