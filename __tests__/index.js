@@ -135,4 +135,47 @@ describe("test Firetail:Serverless", () => {
             },
         );
     });
+
+    test("should not throw when Date() does not work or status code is not found", done => {
+        const next = firetailWrapper({
+            statusCode: null,
+            body: "some body",
+        });
+
+        const d = Date;
+
+        class C {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+            }
+            foo() {
+                return this.x + this.y;
+            }
+        }
+
+        Date = class D {
+            constructor() {}
+            getTime() {
+                return "not a date";
+            }
+        };
+
+        const cLog = console.log;
+
+        console.log = txt => {
+            expect(txt.startsWith("firetail:log-ext:")).toBe(true);
+            const base64 = txt?.slice(17);
+            const json = JSON.parse(atob(base64));
+            expect(json.executionTime).toBe(0);
+            expect(json.response.statusCode).toBe(200);
+        };
+        next(Serverless_Events["lambda function url"]).then(
+            ({ statusCode, body }) => {
+                expect(statusCode).toBe(null);
+                expect(body).toBe("some body");
+                done();
+            },
+        );
+    });
 });
