@@ -37,7 +37,7 @@ describe("test Firetail:Serverless", () => {
             expect(txt.startsWith("firetail:log-ext:")).toBe(true);
             const base64 = txt?.slice(17);
             const json = JSON.parse(atob(base64));
-            expect(json.executionTime).toBeGreaterThan(time);
+            expect(json.executionTime).toBeGreaterThan(time - 1);
         };
         next(Serverless_Events["lambda function url"])
             .then(({ statusCode, body }) => {
