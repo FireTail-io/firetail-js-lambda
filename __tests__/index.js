@@ -132,6 +132,7 @@ describe("test Firetail:Serverless", () => {
             ({ statusCode, body }) => {
                 expect(statusCode).toBe(200);
                 expect(body).toBe("some body");
+                console.log = cLog.bind(console);
                 done();
             },
         );
@@ -142,8 +143,6 @@ describe("test Firetail:Serverless", () => {
             statusCode: null,
             body: "some body",
         });
-
-        const d = Date;
 
         class C {
             constructor(x, y) {
@@ -175,6 +174,7 @@ describe("test Firetail:Serverless", () => {
             ({ statusCode, body }) => {
                 expect(statusCode).toBe(null);
                 expect(body).toBe("some body");
+                console.log = cLog.bind(console);
                 done();
             },
         );
