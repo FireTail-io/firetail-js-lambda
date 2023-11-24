@@ -16,19 +16,26 @@ function log(event, executionContent) {
     console.log("firetail:log-ext:" +
         Buffer.from(JSON.stringify(logExt)).toString("base64"));
 }
+// @ts-ignore
 function wrap(next) {
     return function (event, context) {
         var startedAt = new Date();
         var observations = [];
         var workInProgress;
-        if (next.constructor.name === "Promise" ||
-            next.constructor.name === "AsyncFunction") {
+        if (typeof next === "object" && typeof next.then === "function") {
+            // next is a Promise or called async function
+            workInProgress = next;
+        }
+        else if (next.constructor.name === "AsyncFunction") {
+            // next is an uncalled async function
             workInProgress = next(event, context, function () { });
         }
         else if (typeof next === "function") {
+            // next is an uncalled sync function
             workInProgress = Promise.resolve(next(event, context, function () { }));
         }
         else {
+            // next is not a function
             workInProgress = Promise.resolve(next);
         }
         return workInProgress.then(function (result) {
