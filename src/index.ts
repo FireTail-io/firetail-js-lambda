@@ -48,14 +48,17 @@ function wrap(next: Function & { then?: Function }) {
         const observations: Array<Object> = [];
 
         let workInProgress;
-        if (
-            next.constructor.name === "Promise" ||
-            next.constructor.name === "AsyncFunction"
-        ) {
+        if (typeof next === "object" && typeof next.then === "function") {
+            // next is a Promise or called async function
+            workInProgress = next;
+        } else if (next.constructor.name === "AsyncFunction") {
+            // next is an uncalled async function
             workInProgress = next(event, context, () => {});
         } else if (typeof next === "function") {
+            // next is an uncalled sync function
             workInProgress = Promise.resolve(next(event, context, () => {}));
         } else {
+            // next is not a function
             workInProgress = Promise.resolve(next);
         }
 
