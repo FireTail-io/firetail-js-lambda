@@ -39,7 +39,8 @@ function log(
     );
 }
 
-function wrap(next: Function & { then?: Function }) {
+// @ts-ignore
+function wrap(next: Promise | (Function & { then?: Function })) {
     return (
         event: APIGatewayProxyEvent | APIGatewayProxyEventV2,
         context: Context,
