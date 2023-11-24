@@ -2,7 +2,7 @@
 function log(event, executionContent) {
     var date1_ms = executionContent.startedAt.getTime();
     var date2_ms = executionContent.finishedAt.getTime();
-    var executionTime = Number.isFinite(date2_ms - date1_ms)
+    var execution_time = Number.isFinite(date2_ms - date1_ms)
         ? date2_ms - date1_ms
         : 0;
     var logExt = {
@@ -11,7 +11,7 @@ function log(event, executionContent) {
             statusCode: executionContent.statusCode,
             body: executionContent.resBody,
         },
-        execution_time: executionTime,
+        execution_time: execution_time,
         observations: executionContent.observations,
         metadata: {
             libraryType: "Lambda wrapper",
@@ -19,30 +19,33 @@ function log(event, executionContent) {
             libraryLanguage: "JavaScript",
         },
     };
-    console.log(
-        "firetail:log-ext:" +
-            Buffer.from(JSON.stringify(logExt)).toString("base64"),
-    );
+    console.log("firetail:log-ext:" +
+        Buffer.from(JSON.stringify(logExt)).toString("base64"));
 }
+// @ts-ignore
 function wrap(next) {
     return function (event, context) {
         var startedAt = new Date();
         var observations = [];
         var workInProgress;
-        if (
-            next.constructor.name === "Promise" ||
-            next.constructor.name === "AsyncFunction"
-        ) {
-            workInProgress = next(event, context, function () {});
-        } else if (typeof next === "function") {
-            workInProgress = Promise.resolve(
-                next(event, context, function () {}),
-            );
+        if (typeof next === "object" && typeof next.then === "function") {
+            // next is a Promise or called async function
+            workInProgress = next;
+        }
+        else if (next.constructor.name === "AsyncFunction") {
+            // next is an uncalled async function
+            workInProgress = next(event, context, function () { });
+        }
+        else if (typeof next === "function") {
+            // next is an uncalled sync function
+            workInProgress = Promise.resolve(next(event, context, function () { }));
             observations.push({
                 type: "firetail.configuration.synchronous.handler.detected",
                 title: "The wrapper has been called with a synchronous function",
             });
-        } else {
+        }
+        else {
+            // next is not a function
             workInProgress = Promise.resolve(next);
             observations.push({
                 type: "firetail.configuration.no.handler.detected",
@@ -50,8 +53,7 @@ function wrap(next) {
             });
         }
         return workInProgress.then(function (result) {
-            var body = result.body,
-                statusCode = result.statusCode;
+            var body = result.body, statusCode = result.statusCode;
             var finishedAt = new Date();
             log(event, {
                 statusCode: statusCode || 200,
