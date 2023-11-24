@@ -46,7 +46,8 @@ function log(
     );
 }
 
-function wrap(next: Function & { then?: Function }) {
+// @ts-ignore
+function wrap(next: Promise | (Function & { then?: Function })) {
     return (
         event: APIGatewayProxyEvent | APIGatewayProxyEventV2,
         context: Context,
@@ -55,18 +56,21 @@ function wrap(next: Function & { then?: Function }) {
         const observations: Array<Object> = [];
 
         let workInProgress;
-        if (
-            next.constructor.name === "Promise" ||
-            next.constructor.name === "AsyncFunction"
-        ) {
+        if (typeof next === "object" && typeof next.then === "function") {
+            // next is a Promise or called async function
+            workInProgress = next;
+        } else if (next.constructor.name === "AsyncFunction") {
+            // next is an uncalled async function
             workInProgress = next(event, context, () => {});
         } else if (typeof next === "function") {
+            // next is an uncalled sync function
             workInProgress = Promise.resolve(next(event, context, () => {}));
             observations.push({
                 type: "firetail.configuration.synchronous.handler.detected",
                 title: "The wrapper has been called with a synchronous function",
             });
         } else {
+            // next is not a function
             workInProgress = Promise.resolve(next);
             observations.push({
                 type: "firetail.configuration.no.handler.detected",
